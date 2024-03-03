@@ -558,8 +558,8 @@ impl FaceBsp {
         // We always sort edges and then choose the first one for splitting, but randomly choosing
         // the splitting plane is more optimal. Here is the simplest LCG random generator. The
         // parameters were copied from Numerical Recipes.
-        let first_idx = ((edges.len() as u32).overflowing_mul(1664525).0 + 1013904223)
-            % edges.len() as u32;
+        let first_idx =
+            ((edges.len() as u32).overflowing_mul(1664525).0 + 1013904223) % edges.len() as u32;
         edges.swap(0, first_idx as usize);
         edges
     }
@@ -661,8 +661,8 @@ impl HrtfSphere {
     /// Sampling with bilinear interpolation. See more info here http://www02.smt.ufrj.br/~diniz/conf/confi117.pdf
     fn sample_bilinear(
         &self,
-        left_hrtf: &mut Vec<Complex<f32>>,
-        right_hrtf: &mut Vec<Complex<f32>>,
+        left_hrtf: &mut [Complex<f32>],
+        right_hrtf: &mut [Complex<f32>],
         dir: Vec3,
     ) {
         let dir = dir.scale(10.0);
@@ -675,7 +675,7 @@ impl HrtfSphere {
         {
             let len = a.left_hrtf.len();
 
-            left_hrtf.resize(len, Complex::zero());
+            assert_eq!(left_hrtf.len(), len);
             for (((t, u), v), w) in left_hrtf
                 .iter_mut()
                 .zip(a.left_hrtf.iter())
@@ -685,7 +685,7 @@ impl HrtfSphere {
                 *t = *u * bary.u + *v * bary.v + *w * bary.w;
             }
 
-            right_hrtf.resize(len, Complex::zero());
+            assert_eq!(right_hrtf.len(), len);
             for (((t, u), v), w) in right_hrtf
                 .iter_mut()
                 .zip(a.right_hrtf.iter())
@@ -700,9 +700,7 @@ impl HrtfSphere {
 
 #[inline]
 fn copy_replace(prev_samples: &mut Vec<f32>, raw_buffer: &mut [Complex<f32>], segment_len: usize) {
-    if prev_samples.len() != segment_len {
-        *prev_samples = vec![0.0; segment_len];
-    }
+    assert_eq!(prev_samples.len(), segment_len);
 
     // Copy samples from previous iteration in the beginning of the buffer.
     for (prev_sample, raw_sample) in prev_samples.iter().zip(&mut raw_buffer[..segment_len]) {
