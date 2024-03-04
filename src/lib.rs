@@ -699,7 +699,7 @@ impl HrtfSphere {
 }
 
 #[inline]
-fn copy_replace(prev_samples: &mut Vec<f32>, raw_buffer: &mut [Complex<f32>], segment_len: usize) {
+fn copy_replace(prev_samples: &mut [f32], raw_buffer: &mut [Complex<f32>], segment_len: usize) {
     assert_eq!(prev_samples.len(), segment_len);
 
     // Copy samples from previous iteration in the beginning of the buffer.
@@ -730,7 +730,7 @@ fn convolve_overlap_save(
     scratch_buffer: &mut [Complex<f32>],
     hrtf: &[Complex<f32>],
     hrtf_len: usize,
-    prev_samples: &mut Vec<f32>,
+    prev_samples: &mut [f32],
     fft: &dyn Fft<f32>,
     ifft: &dyn Fft<f32>,
 ) {
