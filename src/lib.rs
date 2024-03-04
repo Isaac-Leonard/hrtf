@@ -234,7 +234,7 @@ struct Face {
 /// See module docs.
 #[derive(Clone)]
 pub struct HrtfSphere {
-    length: usize,
+    pub length: usize,
     points: Vec<HrtfPoint>,
     face_bsp: FaceBsp,
     source: PathBuf,
@@ -558,8 +558,8 @@ impl FaceBsp {
         // We always sort edges and then choose the first one for splitting, but randomly choosing
         // the splitting plane is more optimal. Here is the simplest LCG random generator. The
         // parameters were copied from Numerical Recipes.
-        let first_idx = ((edges.len() as u32).overflowing_mul(1664525).0 + 1013904223)
-            % edges.len() as u32;
+        let first_idx =
+            ((edges.len() as u32).overflowing_mul(1664525).0 + 1013904223) % edges.len() as u32;
         edges.swap(0, first_idx as usize);
         edges
     }
@@ -700,9 +700,7 @@ impl HrtfSphere {
 
 #[inline]
 fn copy_replace(prev_samples: &mut Vec<f32>, raw_buffer: &mut [Complex<f32>], segment_len: usize) {
-    if prev_samples.len() != segment_len {
-        *prev_samples = vec![0.0; segment_len];
-    }
+    assert_eq!(prev_samples.len(), segment_len);
 
     // Copy samples from previous iteration in the beginning of the buffer.
     for (prev_sample, raw_sample) in prev_samples.iter().zip(&mut raw_buffer[..segment_len]) {
