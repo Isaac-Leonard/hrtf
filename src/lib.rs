@@ -234,7 +234,7 @@ struct Face {
 /// See module docs.
 #[derive(Clone)]
 pub struct HrtfSphere {
-    length: usize,
+    pub length: usize,
     points: Vec<HrtfPoint>,
     face_bsp: FaceBsp,
     source: PathBuf,
